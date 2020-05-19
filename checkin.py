@@ -83,18 +83,21 @@ post_array = []
 for item in form_components:
     name = item['name']
     if name in value_list:
+        hide = True if value_list[name]['hide'] else False
+        if 'select' in name and 'stringValue' in value_list[name]['value'] and value_list[name]['value']['stringValue'] == "":
+            hide = True
         post_array.append({
             'name': name,
-            'hide': True if value_list[name]['hide'] else False,
             'title': value_list[name]['title'],
-            'value': value_list[name]['value']
+            'value': value_list[name]['value'],
+            'hide': hide
         })
     else:
         post_array.append({
             'name': name,
-            'hide': False,
             'title': item['title'],
-            'value': {}
+            'value': {},
+            'hide': True if 'label' not in name else False,
         })
 
 
@@ -104,9 +107,9 @@ post_json = {
     "formData": post_array,
     "playerId": "owner"
 }
-post_json_str = json.dumps(post_json, ensure_ascii=False, indent=4)
+post_json_str = json.dumps(post_json, ensure_ascii=False)
 http_header['Content-Type'] = 'application/json'
-http_header['Referer'] = 'https://xmuxg.xmu.edu.cn/index'
+http_header['Referer'] = 'https://xmuxg.xmu.edu.cn/app/214'
 resp = session.post(post_modify_url, headers=http_header, data=post_json_str.encode('utf-8'))
 
 print("Automatically checked in successfully!")
