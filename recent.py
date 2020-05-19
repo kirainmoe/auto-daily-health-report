@@ -96,6 +96,7 @@ log_text = session.get(changelog_url).text
 log_json = json.loads(log_text)['data']['logs']
 
 result = {
+    "owner": owner,
     "today": len(log_json) > 0,
     "payload": record_set
 }
