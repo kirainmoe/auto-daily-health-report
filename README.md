@@ -4,7 +4,7 @@
 
 仅供学习/交流/健忘症使用；若产生任何后果请自负。
 
-## 下载 & 安装所需库
+# 下载 & 安装所需库
 
 此程序基于 Python 3，需要 `requests` 和 `BeautiuflSoup, lxml` 库支持以发送网络请求、解析网页。程序在 Python 3.6, macOS 10.15 环境下测试。
 
@@ -16,13 +16,15 @@ git clone https://github.com/kirainmoe/auto-daily-health-report
 pip install
 ```
 
-## 使用
+# 使用
+
+## 执行打卡
 
 由于健康打卡需要首先通过“厦门大学统一身份认证系统”进行 OAuth 认证，因此需要向程序提供统一认证的学工号/密码，或提供已登录过 https://xmuxg.xmu.edu.cn 的名为 `SAAS_U` 的 Cookie.
 
 **程序不会储存你输入的任何用户名、密码或 Cookie, 也不会将获得和输入的用户名、密码、Cookie 等信息发送到除 `*.xmu.edu.cn` 之外的其它网站。**
 
-### 使用厦大统一身份认证学工号/密码打卡
+### 使用统一身份认证学工号/密码打卡
 
 ```bash
 python checkin.py [username] [password]
@@ -46,7 +48,16 @@ python checkin.py [cookie:SAAS_U]
 
 使用 Cookie 打卡更安全，但是可能会过期。
 
-## 自动化打卡
+## 检查今日是否已打卡/获取最近打卡信息
+
+```bash
+python recent.py [username] [password]
+
+# or
+python recent.py [cookie:SAAS_U]
+```
+
+# 自动化打卡
 
 ### 使用 Linux 计划任务 (Crontab) 自动打卡
 
