@@ -17,7 +17,7 @@ def login(session, username, password, cookie, use_cookie, http_header):
             "SAAS_U": cookie
         })
     else:
-        oauth_login_url = "https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas"
+        oauth_login_url = "https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas/xmu"
         resp = session.get(oauth_login_url, headers=http_header)
         soup = BeautifulSoup(resp.text, 'lxml')
         lt = soup.select('input[name="lt"]')[0]["value"]
