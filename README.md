@@ -46,7 +46,7 @@ python checkin.py [cookie:SAAS_U]
 
 使用用户名和密码打卡较方便，但有较小的可能性导致泄露。
 
-使用 Cookie 打卡更安全，但是可能会过期。
+使用 Cookie 打卡更安全，但是当主动登出账号，或学工系统服务器重启时可能会过期。
 
 ### 检查今日是否已打卡/获取最近打卡信息
 
@@ -60,6 +60,8 @@ python recent.py [cookie:SAAS_U]
 返回 `JSON` 类型数据。若返回数据中 `today` 为 `true` 表示今日已打卡；同时返回当前账号的姓名、最近几天打卡记录。
 
 ## 自动化打卡
+
+> 提示：在凌晨期间 (0:00-7:00) 打卡可能会遇到服务器崩溃的问题，建议在多个时段执行打卡，或使用 `recent.py` 自行检查是否打卡成功。
 
 ### 使用 Linux 计划任务 (Crontab) 自动打卡
 
@@ -92,7 +94,11 @@ https://ami.kirainmoe.com:2333/XMUHealth/checkInByCookie?cookie=[cookie]
 
 ### 通过 Ami / ゆい 打卡
 
-你可以在 `BanGDream@XMU` QQ 群组中，私聊 QQ 机器人 Ami（或在 `PCR@XMU` QQ 群组中私聊机器人ゆい），发送 `ami绑定打卡`（或 `ue绑定打卡`），Ami / UE 会告诉你具体的操作方式；每天 00:10 开始 Ami / UE 会自动帮助所有绑定的人打卡。
+你可以在 `BanGDream@XMU` QQ 群组中，私聊 QQ 机器人 Ami（或在 `PCR@XMU` QQ 群组中私聊机器人ゆい），发送 `ami绑定打卡`（或 `ue绑定打卡`），Ami / UE 会告诉你具体的操作方式；每天凌晨 Ami / UE 会自动帮助所有绑定的人打卡。
+
+![bot.png](https://i.loli.net/2020/05/21/ArDbsOucV8o9lCq.png)
+
+![QQ20200521-110539@2x.png](https://i.loli.net/2020/05/21/LDwNJSBn75OaC1T.png)
 
 ## License
 

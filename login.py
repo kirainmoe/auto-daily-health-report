@@ -8,7 +8,7 @@ def login(session, username, password, cookie, use_cookie, http_header):
     """
     use cookie: just requires "SAAS_U"
     emulate OAuth login:
-        POST https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas
+        POST https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas/xmu
         form data: username, password, lt, dllt, execution, _eventId="submit", rmShown=1
     """
 

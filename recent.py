@@ -40,9 +40,13 @@ session = requests.Session()
 login(session, username, password, cookie, use_cookie, http_header)
 
 # get record business id
-get_business_url = 'https://xmuxg.xmu.edu.cn/api/app/221/business/now'
-resp = session.get(get_business_url, headers=http_header).text
-business_id = json.loads(resp)['data'][0]['business']['id']
+try:
+    get_business_url = 'https://xmuxg.xmu.edu.cn/api/app/221/business/now'
+    resp = session.get(get_business_url, headers=http_header).text
+    business_id = json.loads(resp)['data'][0]['business']['id']
+except KeyError:
+    print("Unable to finish OAuth. Please check your auth info. Sometimes this may happen because the server is down.")
+    sys.exit(1)
 
 # get recent checkin status
 recent_url = "https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/myFormInstance" % str(business_id)
