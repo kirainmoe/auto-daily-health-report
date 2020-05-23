@@ -45,7 +45,10 @@ try:
     resp = session.get(get_business_url, headers=http_header).text
     business_id = json.loads(resp)['data'][0]['business']['id']
 except KeyError:
-    print("Unable to finish OAuth. Please check your auth info. Sometimes this may happen because the server is down.")
+    print(json.dumps({
+        "status": "failed",
+        "reason": "auth failed (incorrect auth info or server is down)"
+    }, indent=4))
     sys.exit(1)
 
 # get recent checkin status
@@ -88,6 +91,8 @@ for item in record_data:
 now_url = "https://xmuxg.xmu.edu.cn/api/app/214/business/now"
 resp = session.get(now_url).text
 form_id = str(json.loads(resp)['data'][0]['business']['id'])
+form_begin = json.loads(resp)['data'][0]['business']['name']
+cur_time = time.strftime("%Y-%m-%d",  time.localtime())
 
 form_instance_url = "https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/myFormInstance" % form_id
 resp = session.get(form_instance_url, headers=http_header).text
@@ -101,7 +106,7 @@ log_json = json.loads(log_text)['data']['logs']
 
 result = {
     "owner": owner,
-    "today": len(log_json) > 0,
+    "today": len(log_json) > 0 and cur_time == form_begin,
     "payload": record_set
 }
 print(json.dumps(result, ensure_ascii=False, indent=4))

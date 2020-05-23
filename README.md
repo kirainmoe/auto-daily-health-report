@@ -63,9 +63,7 @@ python recent.py [cookie:SAAS_U]
 
 ## 自动化打卡
 
-> 提示：<s>在凌晨期间 (0:00-7:00) 打卡可能会遇到服务器崩溃的问题</s>，建议在多个时段执行打卡，或使用 `recent.py` 自行检查是否打卡成功。
-
-> 提示 2： 现在只能在 7:00-19:30 打卡了，所以若要自动化打卡，你需要修改下面的规则。
+> 提示：建议在多个时段执行打卡，或使用 `recent.py` 自行检查是否打卡成功。另外从 5.21 起就修改了打卡时间，现在只能在 7:00-19:30 打卡了，所以若要使用下面的规则实现自动化打卡，你需要修改规则中的时间。
 
 ### 使用 Linux 计划任务 (Crontab) 自动打卡
 
@@ -75,7 +73,7 @@ python recent.py [cookie:SAAS_U]
 30 */24 * * * /usr/bin/python /path/to/checkin.py [username] [password]
 ```
 
-其中，`30 */24 * * *` 表示定时任务的运行时间规则为每日的 0:30 执行程序打卡（不建议在每日 0:00 打卡，可能产生问题）；`/path/to/checkin.py` 表示 `checkin.py` 的完整路径，`[username] [password]` 则表示你的身份认证信息。
+其中，`30 */24 * * *` 表示定时任务的运行时间规则为每日的 0:30 执行程序打卡；`/path/to/checkin.py` 表示 `checkin.py` 的完整路径，`[username] [password]` 则表示你的身份认证信息。
 
 在 Linux 下使用以下命令激活定时任务：
 
@@ -103,6 +101,22 @@ https://ami.kirainmoe.com:2333/XMUHealth/checkInByCookie?cookie=[cookie]
 ![bot.png](https://i.loli.net/2020/05/21/ArDbsOucV8o9lCq.png)
 
 ![QQ20200521-110539@2x.png](https://i.loli.net/2020/05/21/LDwNJSBn75OaC1T.png)
+
+## 返回值
+
+### checkin.py
+
+签到成功与否都在 `stdout` 输出一串 JSON，包含字段 `status` （值为 `success` 或 `failed`）表示是否成功打卡。
+
+若为 `failed`，则在 `reason` 字段说明原因（登录失败、鉴权信息错误、学工服务器内部错误等）。程序返回值为 `1`.
+
+若为 `success`，则在 `name` 字段描述打卡对象姓名，程序返回值为 `0`.
+
+### recent.py
+
+获取信息成功与否都在 `stdout` 输出一串 JSON，包含字段 `status` （值为 `success` 或 `failed`） 表示是否成功获取信息。
+
+若为 `failed`，则在 `reason` 字段说明无法获取信息的原因；若为 `success`，则有 `owner` 字段显示打卡对象姓名，`today` 字段表示今日是否打卡，`recent` 字段表示最近的打卡数据。
 
 ## License
 

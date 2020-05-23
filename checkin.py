@@ -4,11 +4,6 @@ import sys
 
 from login import login
 
-'''
-usage: python checkin.py [username] [password]
-or: python checkin.py [cookie:SAAS_U]
-'''
-
 username = ""
 password = ""
 cookie = ""
@@ -39,21 +34,36 @@ login(session, username, password, cookie, use_cookie, http_header)
 
 # get form id
 now_url = "https://xmuxg.xmu.edu.cn/api/app/214/business/now"
-resp = session.get(now_url).text
-form_id = str(json.loads(resp)['data'][0]['business']['id'])
+resp = None
+form_id = None
+try:
+    resp = session.get(now_url).text
+    form_id = str(json.loads(resp)['data'][0]['business']['id'])
+except Exception:
+    print(json.dumps({
+        "status": "failed",
+        "reason": "Login failed (incorrect auth info or captcha required)"
+    }, indent=4))
+    sys.exit(1)
 
 # get form instance
 form_url = "https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/formRenderData?playerId=owner" % form_id
-resp = session.get(form_url, headers=http_header).text
-form_components = json.loads(resp)["data"]["components"]
+form_components = None
+try:
+    resp = session.get(form_url, headers=http_header).text
+    form_components = json.loads(resp)["data"]["components"]
+except Exception:
+    print(json.dumps({
+        "status": "failed",
+        "reason": "Internal server error (logged in but cannot get form id)"
+    }, indent=4))
+    sys.exit(1)
 
 # get owner modification
 form_instance_url = "https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/myFormInstance" % form_id
 resp = session.get(form_instance_url, headers=http_header).text
 form_json = json.loads(resp)["data"]
 instance_id = form_json["id"]
-
-print("Logged in as: %s" % form_json["owner"]["name"])
 
 # change form content
 value_list = {}
@@ -112,4 +122,8 @@ http_header['Content-Type'] = 'application/json'
 http_header['Referer'] = 'https://xmuxg.xmu.edu.cn/app/214'
 resp = session.post(post_modify_url, headers=http_header, data=post_json_str.encode('utf-8'))
 
-print("Automatically checked in successfully!")
+print(json.dumps({
+    "status": "success",
+    "info": "automatically checked in successfully.",
+    "name": form_json["owner"]["name"]
+}, indent=4, ensure_ascii=False))
