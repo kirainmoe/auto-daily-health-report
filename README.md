@@ -13,7 +13,7 @@
 ```bash
 git clone https://github.com/kirainmoe/auto-daily-health-report
 
-pip install -r requirements.txt -i https://pypi.douban.com
+pip install -r requirements.txt -i https://pypi.douban.com/simple
 ```
 
 ## 使用
