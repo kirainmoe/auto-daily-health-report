@@ -2,7 +2,13 @@
 
 这是一个模拟自动登录厦门大学学工系统，并自动完成厦门大学每日健康打卡 (Daily Health Report) (https://xmuxg.xmu.edu.cn/app/214) 的 Python 程序。
 
-仅供学习/交流/健忘症使用；若产生任何后果请自负。
+截至 2020 年 7 月，这段程序已经稳定帮作者本人打卡了两个月。若打卡逻辑没有特别变动，本项目将不再更新。
+
+![image.png](https://i.loli.net/2020/07/18/9kspbW6LIUjcQ1t.png)
+
+## 免责声明
+
+此项目仅供学习/交流/健忘症玩家使用；若产生任何后果（包括但不限于被学院或辅导员<s>橄榄</s>、因学工服务器接口修改等原因中断打卡等）请自负。
 
 ## 下载 & 安装所需库
 
@@ -48,7 +54,7 @@ python checkin.py [cookie:SAAS_U]
 
 使用 Cookie 打卡更安全，但是当主动登出账号，或学工系统服务器重启时可能会过期。
 
-> 提醒：由于学工系统日常抽风会导致会话失效，因此 Cookie 可能很快就会 expire，建议使用用户名和密码打卡。
+> 提醒：由于学工系统日常抽风会导致会话失效，因此 Cookie 可能很快就会失效，建议使用用户名和密码打卡。
 
 ### 检查今日是否已打卡/获取最近打卡信息
 
@@ -61,9 +67,38 @@ python recent.py [cookie:SAAS_U]
 
 返回 `JSON` 类型数据。若返回数据中 `today` 为 `true` 表示今日已打卡；同时返回当前账号的姓名、最近几天打卡记录。
 
-## 自动化打卡
+## 打卡自动化
 
-> 提示：建议在多个时段执行打卡，或使用 `recent.py` 自行检查是否打卡成功。另外从 5.21 起就修改了打卡时间，现在只能在 7:00-19:30 打卡了，所以若要使用下面的规则实现自动化打卡，你需要修改规则中的时间。
+### 使用持续集成环境 (CI) 或 GitHub Actions 自动打卡 （推荐）
+
+以使用 Travis CI 为例，首先前往 travis-ci.org 注册一个账号，并在 GitHub 创建一个名称任意的项目仓库，如 `ci-health-report`.
+
+然后在 `ci-health-report` 项目仓库中，创建 `.travis.yml` 文件，写入如下内容：
+
+```yaml
+sudo: required
+os: linux
+language: python
+python:
+- 3.8
+install:
+- pip install -r requirements.txt
+script:
+- python checkin.py ${xmu_username} ${xmu_password}
+```
+
+转到 travis-ci.org ，使用 GitHub 账号登陆，然后启用 `ci-health-report` 项目的持续集成开关，并在项目设置中设置以下环境变量：
+
+| NAME | VALUE |
+|------|-------|
+| xmu_username | 你的学工号 |
+| xmu_password | 你的统一认证密码 |
+
+以上环境变量在任何地方对公众都是不可见的。完成后同时在项目设置中添加 Cron Jobs，分支填写 `master`，运行时刻选 `daily` 和 `Do not run... 24h`。
+
+![image.png](https://i.loli.net/2020/07/18/7uPExRmdbAULWHs.png)
+
+然后**在打卡时间内手动触发一次集成构建**即可。
 
 ### 使用 Linux 计划任务 (Crontab) 自动打卡
 
@@ -74,6 +109,8 @@ python recent.py [cookie:SAAS_U]
 ```
 
 其中，`30 */24 * * *` 表示定时任务的运行时间规则为每日的 0:30 执行程序打卡；`/path/to/checkin.py` 表示 `checkin.py` 的完整路径，`[username] [password]` 则表示你的身份认证信息。
+
+> PS: 从 5.27 起全校打卡的时间已经变更，现在只有 7:00-19:30 可以执行打卡，你需要自行修改上述 Cron 计划任务的规则。
 
 在 Linux 下使用以下命令激活定时任务：
 
@@ -91,12 +128,16 @@ https://ami.kirainmoe.com:2333/XMUHealth/checkInByCookie?cookie=[cookie]
 
 将 `[cookie]` 替换成你获得 Cookie 即可，该地址不会保存你的 Cookie 信息。
 
-**你可以使用网站监控服务（监控宝、360 网站监控等）在每日 00:00-16:30 自动向地址发送 GET 请求来实现打卡。**
+**你可以使用网站监控服务（监控宝、360 网站监控等）在每日 07:00-19:00 自动向地址发送 GET 请求来实现打卡。**
 
+### 通过 Ami / ゆい 打卡(推荐)
 
-### 通过 Ami / ゆい 打卡
+你可以私聊 QQ 机器人 AmiBOT：“`ami绑定打卡`”，或私聊机器人ゆいBOT “`ue绑定打卡`”，Ami / ue 会告诉你绑定账号的具体操作方式。每天 7:05 开始， Ami（或 ゆい） 会自动帮助所有绑定的人打卡。截止 2020 年 7 月，已有超过 20 名用户使用 Ami 或 ゆい 稳定打卡。
 
-你可以在 `BanGDream@XMU` QQ 群组中，私聊 QQ 机器人 Ami（或在 `PCR@XMU` QQ 群组中私聊机器人ゆい），发送 `ami绑定打卡`（或 `ue绑定打卡`），Ami / UE 会告诉你具体的操作方式；每天 <s>凌晨</s> 7:05 开始， Ami / UE 会自动帮助所有绑定的人打卡。
+目前 Ami / ゆい 在以下群组中开放：
+
+- BanGDream!@XMU
+- PCR@XMU
 
 ![bot.png](https://i.loli.net/2020/05/21/ArDbsOucV8o9lCq.png)
 
