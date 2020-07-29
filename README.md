@@ -82,6 +82,8 @@ language: python
 python:
 - 3.8
 install:
+- git clone https://github.com/kirainmoe/auto-daily-health-report healthreport
+- cd healthreport
 - pip install -r requirements.txt
 script:
 - python checkin.py ${xmu_username} ${xmu_password}
@@ -99,6 +101,20 @@ script:
 ![image.png](https://i.loli.net/2020/07/18/7uPExRmdbAULWHs.png)
 
 然后**在打卡时间内手动触发一次集成构建**即可。
+
+### 通过 Ami / ゆい 打卡(推荐)
+
+你可以私聊 QQ 机器人 AmiBOT：“`ami绑定打卡`”，或私聊机器人ゆいBOT “`ue绑定打卡`”，Ami / ue 会告诉你绑定账号的具体操作方式。每天 7:05 开始， Ami（或 ゆい） 会自动帮助所有绑定的人打卡。截止 2020 年 7 月，已有超过 20 名用户使用 Ami 或 ゆい 稳定打卡。
+
+目前 Ami / ゆい 在以下群组中开放：
+
+- BanGDream!@XMU
+- PCR@XMU
+
+![bot.png](https://i.loli.net/2020/05/21/ArDbsOucV8o9lCq.png)
+
+![QQ20200521-110539@2x.png](https://i.loli.net/2020/05/21/LDwNJSBn75OaC1T.png)
+
 
 ### 使用 Linux 计划任务 (Crontab) 自动打卡
 
@@ -129,19 +145,6 @@ https://ami.kirainmoe.com:2333/XMUHealth/checkInByCookie?cookie=[cookie]
 将 `[cookie]` 替换成你获得 Cookie 即可，该地址不会保存你的 Cookie 信息。
 
 **你可以使用网站监控服务（监控宝、360 网站监控等）在每日 07:00-19:00 自动向地址发送 GET 请求来实现打卡。**
-
-### 通过 Ami / ゆい 打卡(推荐)
-
-你可以私聊 QQ 机器人 AmiBOT：“`ami绑定打卡`”，或私聊机器人ゆいBOT “`ue绑定打卡`”，Ami / ue 会告诉你绑定账号的具体操作方式。每天 7:05 开始， Ami（或 ゆい） 会自动帮助所有绑定的人打卡。截止 2020 年 7 月，已有超过 20 名用户使用 Ami 或 ゆい 稳定打卡。
-
-目前 Ami / ゆい 在以下群组中开放：
-
-- BanGDream!@XMU
-- PCR@XMU
-
-![bot.png](https://i.loli.net/2020/05/21/ArDbsOucV8o9lCq.png)
-
-![QQ20200521-110539@2x.png](https://i.loli.net/2020/05/21/LDwNJSBn75OaC1T.png)
 
 ## 返回值
 
