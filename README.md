@@ -106,11 +106,6 @@ script:
 
 你可以私聊 QQ 机器人 AmiBOT：“`ami绑定打卡`”，或私聊机器人ゆいBOT “`ue绑定打卡`”，Ami / ue 会告诉你绑定账号的具体操作方式。每天 7:05 开始， Ami（或 ゆい） 会自动帮助所有绑定的人打卡。截止 2020 年 7 月，已有超过 20 名用户使用 Ami 或 ゆい 稳定打卡。
 
-目前 Ami / ゆい 在以下群组中开放：
-
-- BanGDream!@XMU
-- PCR@XMU
-
 ![bot.png](https://i.loli.net/2020/05/21/ArDbsOucV8o9lCq.png)
 
 ![QQ20200521-110539@2x.png](https://i.loli.net/2020/05/21/LDwNJSBn75OaC1T.png)
