@@ -1,1 +1,1 @@
-30 */24 * * * /usr/bin/python /path/to/checkin.py [username] [password]
+30 7/24 * * * /usr/bin/python /path/to/checkin.py [username] [password]
