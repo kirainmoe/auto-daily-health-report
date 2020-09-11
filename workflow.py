@@ -18,10 +18,12 @@ def report_with_server_chan(flag, reason="", success=""):
         else:
             result_text = "今日打卡操作没有成功，请手动完成打卡。错误细节：" + reason
 
+        print(result_text)
+
         session = requests.Session()
         session.post(push_url, {
             "text": "打卡操作提醒",
-            "description": result_text
+            "desp": result_text
         })
     except KeyError:
         print("Cannot report with Server-Chan: secret_key not set")
@@ -42,21 +44,21 @@ except KeyError:
 
 try:
     today_log, status = check_recent(username, password)
-    if status == 0 and today_log.today:
+    if status == 0 and today_log["today"]:
         print("Already reported today :)")
         sys.exit(0)
 
     response, status = health_report(username, password)
     if status != 0:
-        print("Report error, reason: " + response.reason)
-        report_with_server_chan(False, response.reason)
+        print("Report error, reason: " + response["reason"])
+        report_with_server_chan(False, response["reason"])
         sys.exit(1)
 
     today_log, status = check_recent(username, password)
     if status == 0:
-        if today_log.today:
+        if today_log["today"]:
             print("Automatically reported successfully!")
-            success_info = "当前连续打卡" + str(today_log.days) + "天，健康码为" + str(today_log.color) + "码！"
+            success_info = "当前连续打卡" + str(today_log["days"]) + "天，健康码为" + str(today_log["color"]) + "码！"
             report_with_server_chan(True, success=success_info)
             sys.exit(0)
         else:

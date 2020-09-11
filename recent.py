@@ -18,7 +18,7 @@ http_header = {
 }
 
 
-def check_recent(username, password, cookie, use_cookie):
+def check_recent(username, password, cookie='', use_cookie=False):
     # create session
     session = requests.Session()
 

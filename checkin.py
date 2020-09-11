@@ -12,7 +12,7 @@ http_header = {
 }
 
 
-def health_report(username, password, cookie, use_cookie):
+def health_report(username, password, cookie='', use_cookie=False):
     # create session
     session = requests.Session()
 
