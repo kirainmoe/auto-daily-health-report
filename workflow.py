@@ -14,15 +14,17 @@ def report_with_server_chan(flag, reason="", success=""):
         server_chan_secret = os.environ["server_chan_secret"]
         push_url = "https://sc.ftqq.com/" + server_chan_secret + ".send"
         if flag:
+            result_title = "打卡成功提醒"
             result_text = "今日打卡操作已成功！" + success
         else:
+            result_title = "打卡失败提醒"
             result_text = "今日打卡操作没有成功，请手动完成打卡。错误细节：" + reason
 
         print(result_text)
 
         session = requests.Session()
         session.post(push_url, {
-            "text": "打卡操作提醒",
+            "text": result_title,
             "desp": result_text
         })
     except KeyError:
