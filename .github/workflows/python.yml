@@ -1,0 +1,31 @@
+# 这个 workflow 配置用于控制 GitHub Actions 的自动打卡
+# 如果有需要，请按照注释的提示，修改内容
+
+name: XMU daily health report
+
+on:
+  push:
+    branches: [ $default-branch ]
+  schedule:
+    - cron: "5 23 * * *"             # 执行打卡任务的时间，默认是 7:05，需要将其转换成 UTC+0 时区（即比北京时间晚 8 小时），所以 7:05 => 23:05
+  workflow_dispatch:
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: running check in
+      env:
+        xmu_username: ${{ secrets.xmu_username }}
+        xmu_password: ${{ secrets.xmu_password }}
+        server_chan_secret: ${{ secrets.server_chan_secret }}    # 如果你不需要通过 Server 酱 (http://sc.ftqq.com/) 进行打卡结果提醒，请注释此行
+      run: python workflow.py
