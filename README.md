@@ -8,7 +8,8 @@
 
 - [这是什么？](#这是什么)
 - [免责声明](#免责声明)
-- [开箱即用](#开箱即用)
+- [快速设置自动打卡](#快速设置自动打卡)
+- [在本地 / 服务器使用](#在本地--服务器使用)
   - [获取源代码](#获取源代码)
   - [安装依赖](#安装依赖)
   - [执行打卡](#执行打卡)
@@ -19,9 +20,8 @@
 - [常见问题（FAQ）](#常见问题faq)
 - [打卡自动化](#打卡自动化)
   - [通过 AmiBOT / ueBOT 打卡(推荐)](#通过-amibot--uebot-打卡推荐)
-  - [使用持续集成环境 (CI) 或 GitHub Actions 自动打卡 （推荐）](#使用持续集成环境-ci-或-github-actions-自动打卡-推荐)
+  - [使用 GitHub Actions 自动打卡并通过 Server 酱推送结果（推荐）](#使用-github-actions-自动打卡并通过-server-酱推送结果推荐)
   - [使用 Linux 计划任务 (Crontab) 自动打卡](#使用-linux-计划任务-crontab-自动打卡)
-  - [通过 API 打卡（仅支持 Cookie）](#通过-api-打卡仅支持-cookie)
 - [返回值](#返回值)
 - [许可证](#许可证)
 
@@ -35,7 +35,17 @@
 
 此项目仅供学习/交流/健忘症玩家使用；若产生任何后果（包括但不限于被学院或辅导员<s>橄榄</s>、因学工服务器接口修改等原因中断打卡等）请自负。也请对他人的健康负责，认真如实填报健康情况。
 
-## 开箱即用
+## 快速设置自动打卡
+
+- 对于在群聊 `BanGDream@XMU` 的用户，推荐托管 QQ 机器人 `Amiᴮᴼᵀ` 完成自动打卡，具体使用方法详见 [通过 AmiBOT / ueBOT 打卡](#通过-amibot--uebot-打卡推荐)。
+
+- 对于在群聊 `PCR@XMU` 的用户，推荐托管 QQ 机器人 `ゆいᴮᴼᵀ` 完成自动打卡，具体使用方法详见 [通过 AmiBOT / ueBOT 打卡](#通过-amibot--uebot-打卡推荐)。
+
+- **对于普通用户，推荐通过 GitHub Actions 进行简单设置后打卡，具体使用方法详见 [使用 GitHub Actions 实现每日自动打卡](assets/report-with-github-actions.md)**。
+
+- 对于拥有独立服务器 (VPS) 的用户，可以选择使用 Linux 计划任务完成打卡，具体设置方法详见 [在本地 / 服务器使用](#在本地--服务器使用) 和 [使用 Linux 计划任务 (Crontab) 自动打卡](#使用-linux-计划任务-crontab-自动打卡)。
+
+## 在本地 / 服务器使用
 
 此程序基于 Python 3，需要 `requests` 和 `BeautiuflSoup, lxml` 库支持以发送网络请求、解析网页。
 
@@ -179,38 +189,9 @@ A: 那还是麻烦您每天自己打卡好了（无慈悲）。
 
 ---
 
-### 使用持续集成环境 (CI) 或 GitHub Actions 自动打卡 （推荐）
+### 使用 GitHub Actions 自动打卡并通过 Server 酱推送结果（推荐）
 
-以使用 Travis CI 为例，首先前往 travis-ci.org 注册一个账号，并在 GitHub 创建一个名称任意的项目仓库，如 `ci-health-report`.
-
-然后在 `ci-health-report` 项目仓库中，创建 `.travis.yml` 文件，写入如下内容：
-
-```yaml
-sudo: required
-os: linux
-language: python
-python:
-- 3.8
-install:
-- git clone https://github.com/kirainmoe/auto-daily-health-report healthreport
-- cd healthreport
-- pip install -r requirements.txt
-script:
-- python checkin.py ${xmu_username} ${xmu_password}
-```
-
-转到 travis-ci.org ，使用 GitHub 账号登陆，然后启用 `ci-health-report` 项目的持续集成开关，并在项目设置中设置以下环境变量：
-
-| NAME | VALUE |
-|------|-------|
-| xmu_username | 你的学工号 |
-| xmu_password | 你的统一认证密码 |
-
-以上环境变量在任何地方对公众都是不可见的。完成后同时在项目设置中添加 Cron Jobs，分支填写 `master`，运行时刻选 `daily` 和 `Do not run... 24h`。
-
-![image.png](https://i.loli.net/2020/07/18/7uPExRmdbAULWHs.png)
-
-然后**在打卡时间内手动触发一次集成构建**即可。
+请参考 [这篇教程](assets/report-with-github-actions.md) 完成 GitHub Actions 的设置。
 
 ---
 
@@ -229,20 +210,6 @@ script:
 ```bash
 crontab auto-report.cron
 ```
-
----
-
-### 通过 API 打卡（仅支持 Cookie）
-
-通过上文的方法获取名为 `SAAS_U` 的 Cookie，向以下地址发送 GET 请求即可自动打卡：
-
-```
-https://ami.kirainmoe.com:2333/XMUHealth/checkInByCookie?cookie=[cookie]
-``` 
-
-将 `[cookie]` 替换成你获得 Cookie 即可，该地址不会保存你的 Cookie 信息。
-
-**你可以使用网站监控服务（监控宝、360 网站监控等）在每日 07:00-19:00 自动向地址发送 GET 请求来实现打卡。**
 
 ## 返回值
 
