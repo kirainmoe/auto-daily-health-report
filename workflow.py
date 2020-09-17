@@ -58,6 +58,7 @@ try:
         sys.exit(1)
 
     today_log, status = check_recent(username, password)
+    print(today_log, status)
     if status == 0:
         if today_log["today"]:
             print("Automatically reported successfully!")
