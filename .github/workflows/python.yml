@@ -7,7 +7,7 @@ on:
   push:
     branches: [ $default-branch ]
   schedule:
-    - cron: "5 23 * * *"             # 执行打卡任务的时间，默认是 7:05，需要将其转换成 UTC+0 时区（即比北京时间晚 8 小时），所以 7:05 => 23:05
+    - cron: "5 0 * * *"             # 执行打卡任务的时间，默认是 8:05，需要将其转换成 UTC+0 时区（即比北京时间晚 8 小时），所以 8:05 => 0:05
   workflow_dispatch:
 
 jobs:
