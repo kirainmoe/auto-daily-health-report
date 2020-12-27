@@ -47,7 +47,7 @@
 
 ## 在本地 / 服务器使用
 
-此程序基于 Python 3，需要 `requests` 和 `BeautiuflSoup, lxml` 库支持以发送网络请求、解析网页。
+此程序基于 Python 3 **和 Node.js 环境**，需要 `requests` 和 `BeautiuflSoup, lxml` 库支持以发送网络请求、解析网页。
 
 使用此程序要求你具有一些基础的运维技能，如使用基础的终端命令。同时确保你的电脑已经安装了 [Python 3](https://python.org/downloads).
 

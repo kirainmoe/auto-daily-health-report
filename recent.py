@@ -89,7 +89,7 @@ def check_recent(username, password, cookie='', use_cookie=False):
     log_text = session.get(changelog_url).text
     log_json = json.loads(log_text)['data']['logs']
     
-    status_url = "https://xmuxg.xmu.edu.cn/api/schoolcustom/qrCode"
+    status_url = "https://xmuxg.xmu.edu.cn/schoolcustom/qrCode"
     status_text = session.get(status_url).text
     status_json = json.loads(status_text)['data']    
 

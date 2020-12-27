@@ -1,6 +1,7 @@
 import requests
 import json
 import sys
+import execjs
 
 from bs4 import BeautifulSoup
 
@@ -15,6 +16,11 @@ def login(session, username, password, cookie, use_cookie, http_header):
         form data: username, password, lt, dllt, execution, _eventId="submit", rmShown=1
     """
 
+    # workaround for the AES encryption added in 2020/12/27
+    with open("encrypt.js", "r") as file:
+        cryptjs = file.read()
+    ctx = execjs.compile(cryptjs)
+
     if use_cookie:
         requests.utils.add_dict_to_cookiejar(session.cookies, {
             "SAAS_U": cookie
@@ -27,10 +33,11 @@ def login(session, username, password, cookie, use_cookie, http_header):
             lt = soup.select('input[name="lt"]')[0]["value"]
             dllt = soup.select('input[name="dllt"]')[0]['value']
             execution = soup.select('input[name="execution"]')[0]['value']
+            salt = soup.select('input#pwdDefaultEncryptSalt')[0]['value']
 
             login_data = {
                 "username": username,
-                "password": password,
+                "password": ctx.call("encryptAES", password, salt),
                 "lt": lt,
                 "dllt": dllt,
                 "execution": execution,
