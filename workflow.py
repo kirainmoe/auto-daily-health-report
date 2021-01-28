@@ -72,8 +72,8 @@ try:
         report_with_server_chan(False, "Internal server error")
         sys.exit(1)
 
-except Exception:
+except Exception as e:
     reason = "Error occurred while sending the report request."
-    print(reason)
+    print(reason, e)
     report_with_server_chan(False, reason)
     sys.exit(1)
