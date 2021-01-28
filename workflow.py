@@ -45,10 +45,10 @@ except KeyError:
     sys.exit(1)
 
 try:
-#     today_log, status = check_recent(username, password)
-#     if status == 0 and today_log["today"]:
-#         print("Already reported today :)")
-#         sys.exit(0)
+    today_log, status = check_recent(username, password)
+    if status == 0 and today_log["today"]:
+        print("Already reported today :)")
+        sys.exit(0)
 
     response, status = health_report(username, password)
     if status != 0:
