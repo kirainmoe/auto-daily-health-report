@@ -3,6 +3,8 @@ import json
 import sys
 
 from login import login
+from webvpn import with_webvpn
+from utils import get_wrapped_url
 
 
 http_header = {
@@ -12,15 +14,23 @@ http_header = {
 }
 
 
-def health_report(username, password, cookie='', use_cookie=False):
+def health_report(username,
+                  password,
+                  use_webvpn=False,
+                  vpn_username=None,
+                  vpn_password=None):
     # create session
     session = requests.Session()
 
+    if use_webvpn:
+        session = with_webvpn(session, http_header, vpn_username, vpn_password)
+
+
     # login
-    login(session, username, password, cookie, use_cookie, http_header)
+    login(session, username, password, http_header, use_webvpn=use_webvpn)
 
     # get form id
-    now_url = "https://xmuxg.xmu.edu.cn/api/app/214/business/now"
+    now_url = get_wrapped_url("https://xmuxg.xmu.edu.cn/api/app/214/business/now", use_webvpn)
     resp = None
     form_id = None
     try:
@@ -33,7 +43,7 @@ def health_report(username, password, cookie='', use_cookie=False):
         }, 1)
 
     # get form instance
-    form_url = "https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/formRenderData?playerId=owner" % form_id
+    form_url = get_wrapped_url("https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/formRenderData?playerId=owner" % form_id, use_webvpn)
     form_components = None
     try:
         resp = session.get(form_url, headers=http_header).text
@@ -45,7 +55,7 @@ def health_report(username, password, cookie='', use_cookie=False):
         }, 1)
 
     # get owner modification
-    form_instance_url = "https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/myFormInstance" % form_id
+    form_instance_url = get_wrapped_url("https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/myFormInstance" % form_id, use_webvpn)
     resp = session.get(form_instance_url, headers=http_header).text
     form_json = json.loads(resp)["data"]
     instance_id = form_json["id"]
@@ -97,7 +107,7 @@ def health_report(username, password, cookie='', use_cookie=False):
 
 
     # post change
-    post_modify_url = "https://xmuxg.xmu.edu.cn/api/formEngine/formInstance/" + instance_id
+    post_modify_url = get_wrapped_url("https://xmuxg.xmu.edu.cn/api/formEngine/formInstance/" + instance_id, use_webvpn)
     post_json = {
         "formData": post_array,
         "playerId": "owner"
@@ -117,21 +127,14 @@ def health_report(username, password, cookie='', use_cookie=False):
 if __name__ == "__main__":
     username = ""
     password = ""
-    cookie = ""
-    use_cookie = False
-
-    if len(sys.argv) == 2:
-        cookie = sys.argv[1]
-        use_cookie = True
-    elif len(sys.argv) == 3:
+    if len(sys.argv) == 3:
         username = sys.argv[1]
         password = sys.argv[2]
     else:
         print("Usage: python checkin.py [username] [password]")
-        print("   or: python checkin.py [cookie:SAAS_U]")
         sys.exit(1)
     
-    response, status = health_report(username, password, cookie, use_cookie)
+    response, status = health_report(username, password)
     print(json.dumps(response, indent=4, ensure_ascii=False))
     sys.exit(status)
 

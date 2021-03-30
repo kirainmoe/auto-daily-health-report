@@ -4,6 +4,8 @@ import sys
 import time
 
 from login import login
+from webvpn import with_webvpn
+from utils import get_wrapped_url
 
 '''
 usage: python recent.py [username] [password]
@@ -18,16 +20,23 @@ http_header = {
 }
 
 
-def check_recent(username, password, cookie='', use_cookie=False):
+def check_recent(username,
+                  password,
+                  use_webvpn=False,
+                  vpn_username=None,
+                  vpn_password=None):
     # create session
     session = requests.Session()
 
+    if use_webvpn:
+        session = with_webvpn(session, http_header, vpn_username, vpn_password)
+
     # login
-    login(session, username, password, cookie, use_cookie, http_header)
+    login(session, username, password, http_header, use_webvpn)
 
     # get record business id
     try:
-        get_business_url = 'https://xmuxg.xmu.edu.cn/api/app/221/business/now'
+        get_business_url = get_wrapped_url('https://xmuxg.xmu.edu.cn/api/app/221/business/now', use_webvpn)
         resp = session.get(get_business_url, headers=http_header).text
         business_id = json.loads(resp)['data'][0]['business']['id']
     except KeyError:
@@ -37,7 +46,7 @@ def check_recent(username, password, cookie='', use_cookie=False):
         }, 1)
 
     # get recent checkin status
-    recent_url = "https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/myFormInstance" % str(business_id)
+    recent_url = get_wrapped_url("https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/myFormInstance" % str(business_id), use_webvpn)
     resp = session.get(recent_url, headers=http_header).text
     res_json = json.loads(resp)
     form_data = res_json['data']['formData']
@@ -73,23 +82,23 @@ def check_recent(username, password, cookie='', use_cookie=False):
     # get today's modification log
 
     # get form id
-    now_url = "https://xmuxg.xmu.edu.cn/api/app/214/business/now"
+    now_url = get_wrapped_url("https://xmuxg.xmu.edu.cn/api/app/214/business/now", use_webvpn)
     resp = session.get(now_url).text
     form_id = str(json.loads(resp)['data'][0]['business']['id'])
     form_begin = json.loads(resp)['data'][0]['business']['name']
     cur_time = time.strftime("%Y-%m-%d",  time.localtime())
 
-    form_instance_url = "https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/myFormInstance" % form_id
+    form_instance_url = get_wrapped_url("https://xmuxg.xmu.edu.cn/api/formEngine/business/%s/myFormInstance" % form_id, use_webvpn)
     resp = session.get(form_instance_url, headers=http_header).text
     form_json = json.loads(resp)["data"]
     instance_id = form_json["id"]
 
-    changelog_url = "https://xmuxg.xmu.edu.cn/api/formEngine/formInstances/%s/changeLogs?playerId=owner&businessId=%s" \
-                    % (instance_id, form_id)
+    changelog_url = get_wrapped_url("https://xmuxg.xmu.edu.cn/api/formEngine/formInstances/%s/changeLogs?playerId=owner&businessId=%s" \
+                    % (instance_id, form_id), use_webvpn)
     log_text = session.get(changelog_url).text
     log_json = json.loads(log_text)['data']['logs']
     
-    status_url = "https://xmuxg.xmu.edu.cn/schoolcustom/qrCode"
+    status_url = get_wrapped_url("https://xmuxg.xmu.edu.cn/schoolcustom/qrCode", use_webvpn)
     status_text = session.get(status_url).text
     status_json = json.loads(status_text)['data']    
 
@@ -106,21 +115,15 @@ def check_recent(username, password, cookie='', use_cookie=False):
 if __name__ == "__main__":
     username = ""
     password = ""
-    cookie = ""
-    use_cookie = False
 
-    if len(sys.argv) == 2:
-        cookie = sys.argv[1]
-        use_cookie = True
-    elif len(sys.argv) == 3:
+    if len(sys.argv) == 3:
         username = sys.argv[1]
         password = sys.argv[2]
     else:
         print("Get recent daily health report result.")
         print("Usage: python recent.py [username] [password]")
-        print("   or: python recent.py [cookie:SAAS_U]")
         sys.exit(1)
     
-    response, status = check_recent(username, password, cookie, use_cookie)
+    response, status = check_recent(username, password)
     print(json.dumps(response, indent=4, ensure_ascii=False))
     sys.exit(status)
