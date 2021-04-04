@@ -81,7 +81,7 @@ pip install -r requirements.txt -i https://pypi.douban.com/simple
 python app.py username password action
 ```
 
-其中 `username` 和 `password` 分别指代你的学工号和统一认证密码； `action` 表示你要执行的动作是打卡 (action) 或查询 (query)。
+其中 `username` 和 `password` 分别指代你的学工号和统一认证密码； `action` 表示你要执行的动作是打卡 (check) 或查询 (query)。
 
 举个例子，如果你的学工号是 `1145141919810`，密码是 `123456`：
 
