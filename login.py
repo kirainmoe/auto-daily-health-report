@@ -18,7 +18,7 @@ def login(session, username, password, http_header, use_webvpn=False):
     """
 
     # workaround for the AES encryption added in 2020/12/27
-    with open("encrypt.js", "r") as file:
+    with open("./encrypt.js", "r") as file:
         cryptjs = file.read()
     ctx = execjs.compile(cryptjs)
 
