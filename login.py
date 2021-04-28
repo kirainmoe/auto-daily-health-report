@@ -1,6 +1,7 @@
 import requests
 import json
 import sys
+import os
 import execjs
 
 from bs4 import BeautifulSoup
@@ -18,7 +19,7 @@ def login(session, username, password, http_header, use_webvpn=False):
     """
 
     # workaround for the AES encryption added in 2020/12/27
-    with open("./encrypt.js", "r") as file:
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "encrypt.js"), "r") as file:
         cryptjs = file.read()
     ctx = execjs.compile(cryptjs)
 
