@@ -5,6 +5,7 @@ import time
 
 from login import login
 from webvpn import with_webvpn
+from captcha import bypass_captcha
 from utils import get_wrapped_url
 
 '''
@@ -28,8 +29,11 @@ def check_recent(username,
     # create session
     session = requests.Session()
 
-    if use_webvpn:
-        session = with_webvpn(session, http_header, vpn_username, vpn_password)
+    # if use_webvpn:
+    #     session = with_webvpn(session, http_header, vpn_username, vpn_password)
+
+    # bypass captcha
+    bypass_captcha(session, vpn_username, vpn_password)
 
     # login
     login(session, username, password, http_header, use_webvpn)

@@ -10,7 +10,7 @@ def with_webvpn(session, header, vpn_username, vpn_password):
     try: 
         login_page = session.get("https://webvpn.xmu.edu.cn/login",
                                 headers=header).text
-        soup = BeautifulSoup(login_page, 'lxml')
+        soup = BeautifulSoup(login_page, 'html.parser')
 
         need_captcha = soup.select('input[name="needCaptcha"]')[0]['value']
         if need_captcha == 'true':

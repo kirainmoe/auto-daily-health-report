@@ -27,7 +27,7 @@ def login(session, username, password, http_header, use_webvpn=False):
         oauth_login_url = get_wrapped_url("https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas/xmu", use_webvpn)
         resp = session.get(oauth_login_url, headers=http_header)
 
-        soup = BeautifulSoup(resp.text, 'lxml')
+        soup = BeautifulSoup(resp.text, 'html.parser')
         lt = soup.select('input[name="lt"]')[0]["value"]
         dllt = soup.select('input[name="dllt"]')[0]['value']
         execution = soup.select('input[name="execution"]')[0]['value']
