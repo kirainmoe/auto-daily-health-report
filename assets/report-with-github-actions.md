@@ -29,7 +29,7 @@
 
 ![image.png](https://i.loli.net/2020/09/11/aLQZ75iVsu3EIF9.png)
 
-点击 "New Secret"，创建两个环境变量 `xmu_username` 和 `xmu_password`，值分别设置为你的厦门大学学工号和统一身份认证密码，如下图所示。
+点击 "New Secret"，创建四个环境变量 `xmu_username` ，`xmu_password`，`webvpn_username`，`webvpn_password`，值分别设置为你的厦门大学学工号、统一身份认证密码、你的 VPN /校园网账号、你的 VPN /校园网密码，如下图所示。
 
 ![image.png](https://i.loli.net/2020/09/11/smhU6nZXy2IWbGO.png)
 
