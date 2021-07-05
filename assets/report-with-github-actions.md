@@ -29,7 +29,7 @@
 
 ![image.png](https://i.loli.net/2020/09/11/aLQZ75iVsu3EIF9.png)
 
-点击 "New Secret"，创建四个环境变量 `xmu_username` ，`xmu_password`，`webvpn_username`，`webvpn_password`，值分别设置为你的厦门大学学工号、统一身份认证密码、你的 VPN /校园网账号、你的 VPN /校园网密码，如下图所示。
+点击 "New Secret"，创建两个环境变量 `xmu_username` ，`xmu_password`，值分别设置为你的厦门大学学工号、统一身份认证密码，如下图所示。
 
 ![image.png](https://i.loli.net/2020/09/11/smhU6nZXy2IWbGO.png)
 
@@ -39,7 +39,7 @@
 
 ### Step 3. 启用 GitHub Actions
 
-作者在项目的 `.github/workflows` 目录下已经设置好了程序的执行规则 [python.yml](https://github.com/kirainmoe/auto-daily-health-report/blob/master/.github/workflows/python.yml)，默认设置是每天 7:05 分进行打卡。你唯一需要做的就是触发这个 GitHub Action。
+作者在项目的 `.github/workflows` 目录下已经设置好了程序的执行规则 [python.yml](https://github.com/kirainmoe/auto-daily-health-report/blob/master/.github/workflows/python.yml)，默认设置是每天 8:05 分进行打卡。你唯一需要做的就是触发这个 GitHub Action。
 
 在你 Fork 的项目页面中，点击 "Actions"，跳转到设置 GitHub Actions 的页面，找到左边的 "XMU daily health report"，此时右边会提示 `This workflow has a workflow_dispatch event trigger.`，我们点击 "Run workflow"，然后确定之后手动触发一次 GitHub Actions，如下图所示：
 
