@@ -31,7 +31,7 @@
 
 ## 更新日志
 
-> 2021/6/25: 更新了反代验证，现在必须要设置 --vpn-username 和 --vpn-password 才可以使用本程序。  
+> <s>2021/6/25: 更新了反代验证，现在必须要设置 --vpn-username 和 --vpn-password 才可以使用本程序。  </s>
 2021/3/30: 更新了通过 WebVPN 访问学工系统的支持，请查看文档以了解使用方法；但未对 GitHub Workflow 进行修改。  
 2021/12/27: 更新了对统一身份认证系统登录提交信息时 AES 加密的支持
 
@@ -79,23 +79,23 @@ pip install -r requirements.txt -i https://pypi.douban.com/simple
 最简单的使用方法是运行 `app.py` ，同时输入厦门大学统一身份认证账号、密码和操作，执行打卡：
 
 ```
-python app.py username password action --vpn-username=username --vpn-password=vpnpass
+python app.py username password action
 ```
 
 其中 `username` 和 `password` 分别指代你的学工号和统一认证密码、`vpnpass` 指代你的 WebVPN 密码； `action` 表示你要执行的动作是打卡 (check) 或查询 (query)。
 
-举个例子，如果你的学工号是 `1145141919810`，密码是 `123456`，WebVPN 密码是 `1919810`：
+举个例子，如果你的学工号是 `1145141919810`，密码是 `123456`：
 
 如果你要执行打卡，则执行以下命令：
 
 ```shell
-python app.py 1145141919810 123456 check --vpn-username=1145141919810 --vpn-password=1919810
+python app.py 1145141919810 123456 check
 ```
 
 如果你要查询今天是否已经打卡或最近的打卡记录，则执行以下命令：
 
 ```shell
-python app.py 1145141919810 123456 query --vpn-username=1145141919810 --vpn-password=1919810
+python app.py 1145141919810 123456 query
 ```
 
 > Tips: 如果是 macOS 用户，默认 `python` 指向的是系统自带的 Python 2.8 版本，请将上面的 `python` 替换为 `python3`。
