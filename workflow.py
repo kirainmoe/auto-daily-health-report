@@ -38,8 +38,8 @@ def report_with_server_chan(flag, reason="", success=""):
 try:
     username = os.environ["xmu_username"]
     password = os.environ["xmu_password"]
-    webvpn_username = os.environ["webvpn_username"]
-    webvpn_password = os.environ["webvpn_password"]
+#     webvpn_username = os.environ["webvpn_username"]
+#     webvpn_password = os.environ["webvpn_password"]
 except KeyError:
     reason = "You must provide a valid username & password and VPN account to log in xmuxg.xmu.edu.cn！"
     print(reason)
@@ -47,18 +47,18 @@ except KeyError:
     sys.exit(1)
 
 try:
-    today_log, status = check_recent(username, password, vpn_username=webvpn_username, vpn_password=webvpn_password)
+    today_log, status = check_recent(username, password)
     if status == 0 and today_log["today"]:
         print("Already reported today :)")
         sys.exit(0)
 
-    response, status = health_report(username, password, vpn_username=webvpn_username, vpn_password=webvpn_password)
+    response, status = health_report(username, password)
     if status != 0:
         print("Report error, reason: " + response["reason"])
         report_with_server_chan(False, response["reason"])
         sys.exit(1)
 
-    today_log, status = check_recent(username, password, vpn_username=webvpn_username, vpn_password=webvpn_password)
+    today_log, status = check_recent(username, password)
     if status == 0:
         if today_log["today"]:
             print("Automatically reported successfully!")
