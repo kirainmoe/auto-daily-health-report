@@ -33,7 +33,7 @@ def check_recent(username,
     #     session = with_webvpn(session, http_header, vpn_username, vpn_password)
 
     # bypass captcha
-    bypass_captcha(session, vpn_username, vpn_password)
+    # bypass_captcha(session, vpn_username, vpn_password)
 
     # login
     login(session, username, password, http_header, use_webvpn)
