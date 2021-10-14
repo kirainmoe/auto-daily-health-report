@@ -41,7 +41,7 @@
 
 ## 快速设置自动打卡
 
-- **对于普通用户，推荐通过 GitHub Actions 进行简单设置后打卡，具体使用方法详见 [使用 GitHub Actions 实现每日自动打卡](assets/report-with-github-actions.md)**。
+- <s>**对于普通用户，推荐通过 GitHub Actions 进行简单设置后打卡，具体使用方法详见 [使用 GitHub Actions 实现每日自动打卡](assets/report-with-github-actions.md)**。</s> 学工系统已封禁非大陆流量，此方法已作废。
 
 - 对于拥有独立服务器 (VPS) 的用户，可以选择使用 Linux 计划任务完成打卡，具体设置方法详见 [在本地 / 服务器使用](#在本地--服务器使用) 和 [使用 Linux 计划任务 (Crontab) 自动打卡](#使用-linux-计划任务-crontab-自动打卡)。
 
