@@ -2,6 +2,7 @@ use reqwest::{Client};
 use scraper::{Html, Selector};
 use std::error::Error;
 
+use crate::print_on_debug_env;
 use super::encrypt::encrypt_aes_cbc;
 
 const OAUTH_URL: &str = "https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas/xmu";
@@ -44,6 +45,8 @@ pub async fn login(client: &Client, username: &str, password: &str) -> Result<bo
   let execution = select_input_value(&document, "input[name='execution']").await?;
   let salt = select_input_value(&document, "input#pwdDefaultEncryptSalt").await?;
   let password = encrypt_aes_cbc(&password, &salt);
+
+  print_on_debug_env!("Session Info:\nlt = {}\ndllt = {}\nexecution = {}\n", &lt, &dllt, &execution);
 
   let post_form = [
     ("username", username),
