@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use super::client::create_client;
 use super::login::login;
 use super::query::is_today_reported;
@@ -38,13 +36,20 @@ pub struct PipelineResult {
   pub post_data: Option<Value>,
 }
 
-pub async fn pipeline(username: &str, password: &str, retries: i32) -> Result<PipelineResult, Box<dyn Error>> {
+pub async fn pipeline(
+  username: &str,
+  password: &str,
+  retries: i32,
+) -> Result<PipelineResult, anyhow::Error> {
   let client = create_client().await?;
   let mut _stage = PipelineStage::BeforePipeline;
   let mut _post_data: Option<Value> = None;
   let mut tries = 0;
 
-  print_on_debug_env!("[Debug] Running health-report pipeline for user: {}", username);
+  print_on_debug_env!(
+    "[Debug] Running health-report pipeline for user: {}",
+    username
+  );
 
   while tries < retries {
     tries += 1;
@@ -53,43 +58,73 @@ pub async fn pipeline(username: &str, password: &str, retries: i32) -> Result<Pi
       _stage = PipelineStage::BeforePipeline;
     }
 
-    let pipeline_result: Result<bool, Box<dyn Error>> = {
+
+
+    let pipeline_result: Result<bool, anyhow::Error> = {
       print_on_debug_env!("[{}/{}] Stage 1: Performing login()...", tries, retries);
+
       login(&client, username, password).await?;
       _stage.update(PipelineStage::LoginSuccess);
 
-      print_on_debug_env!("[{}/{}] Stage 2: Reading current report status...", tries, retries);
+      let should_force_report = match std::env::var("FORCE_REPORT") {
+        Ok(_) => true,
+        Err(_) => false,
+      };
+
+      print_on_debug_env!(
+        "[{}/{}] Stage 2: Reading current report status...",
+        tries,
+        retries
+      );
+      
       let (today_report_status, _) = is_today_reported(&client).await?;
       if today_report_status {
         match _stage {
           PipelineStage::ReportRequestedSuccess => _stage.update(PipelineStage::Success),
           _ => _stage.update(PipelineStage::AlreadyReportedToday),
         };
+      }
+
+      print_on_debug_env!("today_report_status = {:?}, _stage = {:?}", today_report_status, _stage);
+
+      if (_stage == PipelineStage::AlreadyReportedToday && should_force_report)
+        || (_stage != PipelineStage::AlreadyReportedToday && _stage != PipelineStage::Success)
+      {
+        print_on_debug_env!(
+          "[{}/{}] Stage 3: Making health report request...",
+          tries,
+          retries
+        );
+        let report_result = report(&client).await?;
+        if report_result.status_code == ReportStage::ReportSuccess {
+          print_on_debug_env!("[Debug] health report request successfully end.");
+          _stage.update(PipelineStage::ReportRequestedSuccess);
+          _post_data = report_result.post_data;
+        } else {
+          print_on_debug_env!(
+            "[Debug] health report request failed, err: {}",
+            report_result.error_message.unwrap()
+          );
+          _stage.update(PipelineStage::ReportRequestedFailed);
+        }
+
+        if _stage == PipelineStage::ReportRequestedSuccess {
+          print_on_debug_env!(
+            "[{}/{}] Stage 4: Re-check health report status to ensure...",
+            tries,
+            retries
+          );
+          let (today_report_status, _) = is_today_reported(&client).await?;
+          if today_report_status {
+            _stage.update(PipelineStage::Success);
+          } else {
+            _stage.update(PipelineStage::Failed);
+          }
+        }
 
         Ok(true)
       } else {
-          print_on_debug_env!("[{}/{}] Stage 3: Making health report request...", tries, retries);
-          let report_result = report(&client).await?;
-          if report_result.status_code == ReportStage::ReportSuccess {
-            print_on_debug_env!("[Debug] health report request successfully end.");
-            _stage.update(PipelineStage::ReportRequestedSuccess);
-            _post_data = report_result.post_data;
-          } else {
-            print_on_debug_env!("[Debug] health report request failed, err: {}", report_result.error_message.unwrap());
-            _stage.update(PipelineStage::ReportRequestedFailed);
-          }
-
-          if _stage == PipelineStage::ReportRequestedSuccess {
-            print_on_debug_env!("[{}/{}] Stage 4: Re-check health report status to ensure...", tries, retries);
-            let (today_report_status, _) = is_today_reported(&client).await?;
-            if today_report_status {
-              _stage.update(PipelineStage::Success);
-            } else {
-              _stage.update(PipelineStage::Failed);
-            }
-          }
-    
-          Ok(true)
+        Ok(true)
       }
     };
 

@@ -11,6 +11,8 @@ use super::constant::{
 };
 use super::utils::get_system_date;
 
+use anyhow::anyhow;
+
 /// 修改记录
 #[derive(Debug)]
 pub struct ModifyLogResult {
@@ -29,15 +31,15 @@ pub struct ProfileResult {
 ///
 /// @param `client: &Client`
 ///
-/// @return `Result<ModifyLogResult, Box<dyn Error>>
-pub async fn modify_log(client: &Client) -> Result<ModifyLogResult, Box<dyn Error>> {
+/// @return `Result<ModifyLogResult, anyhow::Error>
+pub async fn modify_log(client: &Client) -> Result<ModifyLogResult, anyhow::Error> {
   // 获取每日表单的 businessID
   let resp = get(&client, CURRENT_FORM_URL).await?;
   let form_business_json: Value = from_str(&resp)?;
   let form_id = form_business_json["data"][0]["business"]["id"].to_string();
   let form_date = form_business_json["data"][0]["business"]["name"]
     .as_str()
-    .ok_or("Cannot destruct name")?;
+    .ok_or(anyhow!("Cannot destruct name"))?;
 
   print_on_debug_env!("[Debug] Form business ID of today: {}", &form_id);
 
@@ -47,7 +49,7 @@ pub async fn modify_log(client: &Client) -> Result<ModifyLogResult, Box<dyn Erro
   let mut my_form_instance_json: Value = from_str(&resp)?;
   let form_json = &mut my_form_instance_json["data"];
   let id_value = form_json["id"].clone();
-  let instance_id = id_value.as_str().ok_or("Cannot destruct intance_id!")?;
+  let instance_id = id_value.as_str().ok_or(anyhow!("Cannot destruct intance_id!"))?;
 
   print_on_debug_env!("[Debug] Form instance ID of today: {}", &instance_id);
 
@@ -59,7 +61,7 @@ pub async fn modify_log(client: &Client) -> Result<ModifyLogResult, Box<dyn Erro
   let changelog_json: Value = from_str(&resp)?;
   let changelogs: Vec<Value> = changelog_json["data"]["logs"]
     .as_array()
-    .ok_or("Cannot convert changelogs into array!")?
+    .ok_or(anyhow!("Cannot convert changelogs into array!"))?
     .to_vec();
   Ok(ModifyLogResult {
     logs: changelogs,
@@ -72,7 +74,7 @@ pub async fn modify_log(client: &Client) -> Result<ModifyLogResult, Box<dyn Erro
 /// @param `client: &Client`
 ///
 /// @return `Result<bool, Box<dyn Error>>`
-pub async fn is_today_reported(client: &Client) -> Result<(bool, String), Box<dyn Error>> {
+pub async fn is_today_reported(client: &Client) -> Result<(bool, String), anyhow::Error> {
   let modify_log_result = modify_log(&client).await?;
   let today_date = get_system_date();
 

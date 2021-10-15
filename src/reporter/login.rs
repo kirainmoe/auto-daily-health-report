@@ -1,27 +1,23 @@
 use reqwest::{Client};
-use scraper::{Html, Selector};
-use std::error::Error;
+use anyhow::anyhow;
 
 use crate::print_on_debug_env;
 use super::encrypt::encrypt_aes_cbc;
 
+use regex::Regex;
+
 const OAUTH_URL: &str = "https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas/xmu";
 
-async fn select_input_value<'a>(document: &'a Html, select_target: &str) -> Result<&'a str, Box<dyn Error>> {
-  let selector = Selector::parse(select_target)
-    .or(Err(format!("Create selector {} failed!", select_target)))?;
 
-  let target = document
-    .select(&selector)
-    .next()
-    .ok_or(format!("Cannot find {}!", select_target))?;
-  
-  let value = target
-    .value()
-    .attr("value")
-    .ok_or(format!("Cannot get input value!"))?;
-
-  Ok(value)
+/// simple regex to match input with specific attribute
+/// since rust scraper is not compatible with async
+async fn select_input_value_with_attr<'a>
+  (document: &'a str, attr: &'a str, value: &'a str) -> Result<String, anyhow::Error> {
+  let re = Regex::new(&format!(r##"<input.*{}=['"]{}['"].*value=['"](.*)['"].*[/]>"##, attr, value))?;
+  for cap in re.captures_iter(document) {
+    return Ok(String::from(&cap[1]));
+  }
+  Err(anyhow!("match failed!"))
 }
 
 /// 学工系统统一身份认证登录
@@ -30,7 +26,7 @@ async fn select_input_value<'a>(document: &'a Html, select_target: &str) -> Resu
 /// let client = create_client().await?;
 /// login(client, username, password).await?;
 /// ```
-pub async fn login(client: &Client, username: &str, password: &str) -> Result<bool, Box<dyn Error>> {
+pub async fn login(client: &Client, username: &str, password: &str) -> Result<bool, anyhow::Error> {
   let login_page_resp = client
     .get(OAUTH_URL)
     .send()
@@ -38,22 +34,19 @@ pub async fn login(client: &Client, username: &str, password: &str) -> Result<bo
     .text()
     .await?;
 
-  let document = Html::parse_document(&login_page_resp);
-
-  let lt = select_input_value(&document, "input[name='lt']").await?;
-  let dllt = select_input_value(&document, "input[name='dllt']").await?;
-  let execution = select_input_value(&document, "input[name='execution']").await?;
-  let salt = select_input_value(&document, "input#pwdDefaultEncryptSalt").await?;
+  let lt = select_input_value_with_attr(&login_page_resp, "name", "lt").await?;
+  let execution = select_input_value_with_attr(&login_page_resp, "name", "execution").await?;
+  let salt = select_input_value_with_attr(&login_page_resp, "id", "pwdDefaultEncryptSalt").await?;
   let password = encrypt_aes_cbc(&password, &salt);
 
-  print_on_debug_env!("Session Info:\nlt = {}\ndllt = {}\nexecution = {}\n", &lt, &dllt, &execution);
+  print_on_debug_env!("Session Info:\nlt = {}\nexecution = {}\nsalt={}\n", &lt, &execution, &salt);
 
   let post_form = [
     ("username", username),
     ("password", &password),
-    ("lt", lt),
-    ("dllt", dllt),
-    ("execution", execution),
+    ("lt", &lt),
+    ("dllt", "userNamePasswordLogin"),
+    ("execution", &execution),
     ("_eventId", "submit"),
     ("rmShown", "1"),
   ];
@@ -65,7 +58,10 @@ pub async fn login(client: &Client, username: &str, password: &str) -> Result<bo
     .await?;
   
   let response_url = login_resp.url();
-  assert_eq!(response_url.host_str(), Some("xmuxg.xmu.edu.cn"));
+
+  if response_url.host_str() != Some("xmuxg.xmu.edu.cn") {
+    return Err(anyhow!("Login failed!"));
+  }
 
   Ok(true)
 }

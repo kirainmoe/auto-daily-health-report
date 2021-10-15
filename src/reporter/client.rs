@@ -1,11 +1,9 @@
 use reqwest::header;
 use reqwest::Client;
 
-use std::error::Error;
-
 use super::constant::{USER_AGENT, REFERER};
 
-pub async fn create_client() -> Result<Client, Box<dyn Error>> {
+pub async fn create_client() -> Result<Client, anyhow::Error> {
   let mut headers = header::HeaderMap::new();
   headers.insert("User-Agent", header::HeaderValue::from_static(USER_AGENT));
   headers.insert("Referer", header::HeaderValue::from_static(REFERER));
@@ -18,7 +16,7 @@ pub async fn create_client() -> Result<Client, Box<dyn Error>> {
   Ok(client)
 }
 
-pub async fn get(client: &Client, url: &str) -> Result<String, Box<dyn Error>> {
+pub async fn get(client: &Client, url: &str) -> Result<String, anyhow::Error> {
   let text = client
     .get(url)
     .send()

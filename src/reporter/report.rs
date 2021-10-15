@@ -1,12 +1,11 @@
+use anyhow::anyhow;
+
 use reqwest::Client;
-
 use serde_json::{from_str, Value};
-
-use std::error::Error;
-use std::str::FromStr;
-
 use serde_json::json;
 use serde_json::map::Map;
+
+use std::str::FromStr;
 
 use super::client::get;
 use super::constant::{
@@ -31,7 +30,7 @@ pub enum ReportStage {
 
 pub struct ReportResult {
   pub status_code: ReportStage,
-  pub error_message: Option<Box<dyn Error>>,
+  pub error_message: Option<anyhow::Error>,
   pub post_data: Option<Value>,
 }
 
@@ -41,10 +40,10 @@ pub struct ReportResult {
 /// @param `client: &Client`  已登录过的 reqwest 会话
 /// 
 /// @return  `Result<ReportResult, Box<dyn Error>>`
-pub async fn report(client: &Client) -> Result<ReportResult, Box<dyn Error>> {
+pub async fn report(client: &Client) -> Result<ReportResult, anyhow::Error> {
   let mut _stage = ReportStage::BeforeReport;
 
-  let report_result: Result<Value, Box<dyn Error>> = {
+  let report_result: Result<Value, anyhow::Error> = {
     // 获取每日表单的 form ID
     let resp = get(&client, CURRENT_FORM_URL).await?;
     let form_business_json: Value = from_str(&resp)?;
@@ -60,7 +59,7 @@ pub async fn report(client: &Client) -> Result<ReportResult, Box<dyn Error>> {
     let form_instance_json: Value = from_str(&resp)?;
     let form_components = form_instance_json["data"]["components"]
       .as_array()
-      .ok_or("Cannot destruct form_components")?;
+      .ok_or(anyhow!("Cannot destruct form_components"))?;
 
     _stage = ReportStage::GetFormInstanceDone;
 
@@ -71,7 +70,7 @@ pub async fn report(client: &Client) -> Result<ReportResult, Box<dyn Error>> {
 
     let form_json = &mut my_form_instance_json["data"];
     let id_value = form_json["id"].clone();
-    let instance_id = id_value.as_str().ok_or("Cannot destruct intance_id!")?;
+    let instance_id = id_value.as_str().ok_or(anyhow!("Cannot destruct intance_id!"))?;
 
     print_on_debug_env!("[Debug] Form instance ID of today: {}", instance_id);
 
@@ -80,12 +79,12 @@ pub async fn report(client: &Client) -> Result<ReportResult, Box<dyn Error>> {
     // 修改表单内容
     let form_data = form_json["formData"]
       .as_array_mut()
-      .ok_or("Cannot destruct formData")?;
+      .ok_or(anyhow!("Cannot destruct formData"))?;
     let mut post_value: Map<String, Value> = Map::new();
     for item in form_data.iter() {
-      let name = item["name"].as_str().ok_or("Cannot get name of field")?;
+      let name = item["name"].as_str().ok_or(anyhow!("Cannot get name of field"))?;
 
-      let title = item["title"].as_str().ok_or("Cannot get title of field")?;
+      let title = item["title"].as_str().ok_or(anyhow!("Cannot get title of field"))?;
 
       let new_value: serde_json::Value = {
         // 勾选本人填写
@@ -131,7 +130,7 @@ pub async fn report(client: &Client) -> Result<ReportResult, Box<dyn Error>> {
     // 构造表单
     let mut post_array: Vec<Value> = Vec::new();
     for item in form_components.iter() {
-      let name = item["name"].as_str().ok_or("Cannot destruct name")?;
+      let name = item["name"].as_str().ok_or(anyhow!("Cannot destruct name"))?;
 
       if post_value.contains_key(name) {
         // 因为上一步一定断言了 contains_key，所以这里直接 unwrap
@@ -140,13 +139,13 @@ pub async fn report(client: &Client) -> Result<ReportResult, Box<dyn Error>> {
         let mut hide = if field_item["hide"].is_null() {
           true
         } else {
-          field_item["hide"].as_bool().ok_or("Cannot destruct hide")?
+          field_item["hide"].as_bool().ok_or(anyhow!("Cannot destruct hide"))?
         };
 
         if String::from_str(name)?.contains("select")
           && !field_item["value"]
             .as_object()
-            .ok_or("Cannot convert post_value to object")?
+            .ok_or(anyhow!("Cannot convert post_value to object"))?
             .contains_key("stringValue")
           && field_item["value"]["stringValue"] == ""
         {
@@ -189,7 +188,7 @@ pub async fn report(client: &Client) -> Result<ReportResult, Box<dyn Error>> {
 
     if report_result_json["state"]
       .as_bool()
-      .ok_or("Report response invalid")?
+      .ok_or(anyhow!("Report response invalid"))?
       == true
     {
       _stage = ReportStage::ReportSuccess;

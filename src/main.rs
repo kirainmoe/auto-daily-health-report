@@ -6,7 +6,7 @@ use xmu_health_report_rust_sdk::{
 use clap::{App, AppSettings, Arg};
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), anyhow::Error> {
   let matches = App::new("XMU Daily Health Report Rust CLI - 厦门大学每日健康打卡工具")
     .version("1.0")
     .author("kirainmoe <kirainmoe@gmail.com>")
