@@ -1,10 +1,9 @@
 use xmu_health_report_rust_sdk::{
-  create_client, get_system_date, is_today_reported, login, pipeline, report, PipelineStage,
-  ReportStage, ModifyValueType
+  create_client, get_system_date, is_today_reported, login, pipeline, report,
 };
+use xmu_health_report_rust_sdk::{PipelineStage, ReportStage};
 
 use std::collections::HashMap;
-use serde_json::Value;
 
 use clap::{App, AppSettings, Arg};
 
