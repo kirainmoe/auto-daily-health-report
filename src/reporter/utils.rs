@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Local};
 
 #[macro_export]
 macro_rules! print_on_debug_env {
@@ -18,7 +18,7 @@ macro_rules! print_on_debug_env {
 
 /// 获取当前系统日期，格式为 YYYY-MM-DD
 pub fn get_system_date() -> String {
-  let now: DateTime<Utc> = Utc::now();
+  let now: DateTime<Local> = Local::now();
   let result = format!("{}", now.format("%Y-%m-%d"));
 
   result

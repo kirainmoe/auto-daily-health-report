@@ -8,7 +8,7 @@ pub use reporter::encrypt::encrypt_aes_cbc;
 
 pub use reporter::login::login;
 
-pub use reporter::report::{report, ReportStage};
+pub use reporter::report::{report, ModifyValueType, ReportStage};
 
 pub use reporter::query::{
   modify_log, is_today_reported, get_profile, get_continuous_report_day_count

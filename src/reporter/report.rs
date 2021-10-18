@@ -1,11 +1,11 @@
 use anyhow::anyhow;
 
 use reqwest::Client;
-use serde_json::{from_str, Value};
-use serde_json::json;
-use serde_json::map::Map;
+use serde::{Serialize, Deserialize};
+use serde_json::{json, from_str, map::Map, Value};
 
 use std::str::FromStr;
+use std::collections::HashMap;
 
 use super::client::get;
 use super::constant::{
@@ -16,7 +16,7 @@ use super::constant::{
 };
 use crate::print_on_debug_env;
 
-#[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
 pub enum ReportStage {
   BeforeReport,
   GetFormIdDone,
@@ -28,19 +28,25 @@ pub enum ReportStage {
   ReportFailed,
 }
 
+#[derive(Debug)]
 pub struct ReportResult {
   pub status_code: ReportStage,
   pub error_message: Option<anyhow::Error>,
   pub post_data: Option<Value>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ModifyValueType {
+  pub field_type: String,
+  pub value: Value,
+}
 
 /// 发送打卡请求
 /// 
 /// @param `client: &Client`  已登录过的 reqwest 会话
 /// 
 /// @return  `Result<ReportResult, Box<dyn Error>>`
-pub async fn report(client: &Client) -> Result<ReportResult, anyhow::Error> {
+pub async fn report(client: &Client, modify_fields: &HashMap<String, ModifyValueType>) -> Result<ReportResult, anyhow::Error> {
   let mut _stage = ReportStage::BeforeReport;
 
   let report_result: Result<Value, anyhow::Error> = {
@@ -83,12 +89,21 @@ pub async fn report(client: &Client) -> Result<ReportResult, anyhow::Error> {
     let mut post_value: Map<String, Value> = Map::new();
     for item in form_data.iter() {
       let name = item["name"].as_str().ok_or(anyhow!("Cannot get name of field"))?;
-
       let title = item["title"].as_str().ok_or(anyhow!("Cannot get title of field"))?;
 
       let new_value: serde_json::Value = {
-        // 勾选本人填写
-        if String::from_str(title)?.contains("学生本人是否填写") {
+        let mut iter = modify_fields.iter().filter(|&(key, _value)| name.starts_with(key) || title.starts_with(key));
+        let field_value = iter.next();
+
+        // 自定义修改内容
+        if field_value.is_some() {
+          let mut ret_value = json!({});
+          let (_, value) = field_value.unwrap();
+          ret_value[&value.field_type] = value.value.clone();
+          ret_value
+        }
+        // 修改本人填写字段
+        else if String::from_str(title)?.contains("学生本人是否填写") {
           json!({
             "stringValue": "是",
           })

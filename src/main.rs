@@ -1,7 +1,10 @@
 use xmu_health_report_rust_sdk::{
   create_client, get_system_date, is_today_reported, login, pipeline, report, PipelineStage,
-  ReportStage,
+  ReportStage, ModifyValueType
 };
+
+use std::collections::HashMap;
+use serde_json::Value;
 
 use clap::{App, AppSettings, Arg};
 
@@ -68,7 +71,7 @@ async fn main() -> Result<(), anyhow::Error> {
 
     let client = create_client().await?;
     login(&client, username, password).await?;
-    let report_result = report(&client).await?;
+    let report_result = report(&client, &HashMap::new()).await?;
 
     println!(
       "打卡状态: {}",

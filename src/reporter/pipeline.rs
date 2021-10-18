@@ -3,6 +3,8 @@ use super::login::login;
 use super::query::is_today_reported;
 use super::report::{report, ReportStage};
 
+use std::collections::HashMap;
+
 use serde_json::Value;
 
 use crate::print_on_debug_env;
@@ -58,8 +60,6 @@ pub async fn pipeline(
       _stage = PipelineStage::BeforePipeline;
     }
 
-
-
     let pipeline_result: Result<bool, anyhow::Error> = {
       print_on_debug_env!("[{}/{}] Stage 1: Performing login()...", tries, retries);
 
@@ -95,7 +95,7 @@ pub async fn pipeline(
           tries,
           retries
         );
-        let report_result = report(&client).await?;
+        let report_result = report(&client, &HashMap::new()).await?;
         if report_result.status_code == ReportStage::ReportSuccess {
           print_on_debug_env!("[Debug] health report request successfully end.");
           _stage.update(PipelineStage::ReportRequestedSuccess);
