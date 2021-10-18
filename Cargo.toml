@@ -1,7 +1,7 @@
 [package]
 name = "xmu-health-report-rust-sdk"
 description = "A CLI / SDK intending to simplify XMU Daily Health Report process"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2018"
 license = "MIT"
 repository = "https://github.com/kirainmoe/auto-daily-health-report"

@@ -1,4 +1,5 @@
 use chrono::{DateTime, Local};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[macro_export]
 macro_rules! print_on_debug_env {
@@ -22,4 +23,12 @@ pub fn get_system_date() -> String {
   let result = format!("{}", now.format("%Y-%m-%d"));
 
   result
+}
+
+/// 获取时间戳
+pub fn get_timestamp() -> u128 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis()
 }

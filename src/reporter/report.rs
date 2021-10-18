@@ -8,6 +8,7 @@ use std::str::FromStr;
 use std::collections::HashMap;
 
 use super::client::get;
+use super::utils::get_timestamp;
 use super::constant::{
   CURRENT_FORM_URL, 
   FORM_RENDER_DATA_URL, 
@@ -33,6 +34,7 @@ pub struct ReportResult {
   pub status_code: ReportStage,
   pub error_message: Option<anyhow::Error>,
   pub post_data: Option<Value>,
+  pub report_time: u128,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -219,11 +221,13 @@ pub async fn report(client: &Client, modify_fields: &HashMap<String, ModifyValue
       status_code: _stage,
       post_data: Some(data),
       error_message: None,
+      report_time: get_timestamp(),
     },
     Err(e) => ReportResult {
       status_code: _stage,
       post_data: None,
       error_message: Some(e),
+      report_time: get_timestamp(),
     },
   };
 

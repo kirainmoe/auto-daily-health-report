@@ -1500,7 +1500,7 @@ dependencies = [
 
 [[package]]
 name = "xmu-health-report-rust-sdk"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "aes",
  "anyhow",
