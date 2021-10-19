@@ -4,7 +4,7 @@ LABEL version="2021-10-20"
 ENV XMU_USERNAME=""
 ENV XMU_PASSWORD=""
 
-ADD ./* /daily-report
+ADD ./* /daily-report/
 WORKDIR /daily-report
 
 RUN pip install -r ./requirements.txt ;
