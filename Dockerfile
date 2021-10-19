@@ -7,6 +7,7 @@ ENV XMU_PASSWORD=""
 ADD ./* /daily-report/
 WORKDIR /daily-report
 
-RUN pip install -r ./requirements.txt ;
+RUN pip config set global.index-url https://mirrors.cloud.tencent.com/pypi/simple; \
+    pip install --no-cache-dir -r ./requirements.txt ;
 
-CMD while : ; do /usr/bin/python /daily-report/app.py $XMU_USERNAME $XMU_PASSWORD check; sleep 24h; done
+CMD bash -c "while : ; do /usr/local/bin/python /daily-report/app.py $XMU_USERNAME $XMU_PASSWORD check; sleep 24h; done"
