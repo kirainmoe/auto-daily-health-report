@@ -1,1 +1,1 @@
-30 7/24 * * * /usr/bin/python /path/to/checkin.py [username] [password]
+30 7/24 * * * /usr/bin/python /daily-report/app.py $XMU_USERNAME $XMU_PASSWORD check
