@@ -10,4 +10,4 @@ WORKDIR /daily-report
 RUN pip config set global.index-url https://mirrors.cloud.tencent.com/pypi/simple; \
     pip install --no-cache-dir -r ./requirements.txt ;
 
-CMD bash -c "while : ; do /usr/local/bin/python /daily-report/app.py $XMU_USERNAME $XMU_PASSWORD check; sleep 24h; done"
+CMD bash -c "while : ; do /usr/local/bin/python /daily-report/app.py $XMU_USERNAME $XMU_PASSWORD check; TZ='Asia/Shanghai' date; sleep 24h; done"
