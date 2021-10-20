@@ -31,9 +31,14 @@
 
 ## 更新日志
 
+> 2021/10/19 使用`pycryptodomex`替换了使用ExecJS调用CryptoJS进行ASE加密的逻辑, 并增加了Docker支持
+> 
 > <s>2021/6/25: 更新了反代验证，现在必须要设置 --vpn-username 和 --vpn-password 才可以使用本程序。  </s>
-2021/3/30: 更新了通过 WebVPN 访问学工系统的支持，请查看文档以了解使用方法；但未对 GitHub Workflow 进行修改。  
-2021/12/27: 更新了对统一身份认证系统登录提交信息时 AES 加密的支持
+> 
+> 2021/3/30: 更新了通过 WebVPN 访问学工系统的支持，请查看文档以了解使用方法；但未对 GitHub Workflow 进行修改。
+> 
+> 2020/12/27: 更新了对统一身份认证系统登录提交信息时 AES 加密的支持
+
 
 ## 免责声明
 
@@ -45,6 +50,14 @@
 
 - 对于拥有独立服务器 (VPS) 的用户，可以选择使用 Linux 计划任务完成打卡，具体设置方法详见 [在本地 / 服务器使用](#在本地--服务器使用) 和 [使用 Linux 计划任务 (Crontab) 自动打卡](#使用-linux-计划任务-crontab-自动打卡)。
 
+- 如果你比较喜欢用Docker, 也可以使用Docker容器自动打卡, 使用方法: 
+  ```shell
+  docker run -d --name daily-report \
+  -e XMU_USERNAME="你的学工号" \
+  -e XMU_PASSWORD="你的密码" \
+  eric107/xmu-daily-report:latest
+  ```
+  你也可以自己构建属于你自己的Docker镜像
 ## 在本地 / 服务器使用
 
 此程序基于 Python 3 **和 Node.js 环境**，需要 `requests` 和 `BeautiuflSoup, lxml` 库支持以发送网络请求、解析网页。
@@ -57,7 +70,7 @@
 
 如果你的电脑已经安装了 Git，可以使用下面的命令拉取源代码：
 ```bash
-git clone https://github.com/kirainmoe/auto-daily-health-report
+git clone https://github.com/charlieJ107/auto-daily-health-report
 ```
 
 ### 安装依赖

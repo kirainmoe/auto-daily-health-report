@@ -1,10 +1,10 @@
-import requests
+# -*- coding: utf-8 -*-
 import json
 import sys
-import os
-import execjs
 
 from bs4 import BeautifulSoup
+
+from utils import encryptAES
 from utils import get_wrapped_url
 
 
@@ -19,12 +19,13 @@ def login(session, username, password, http_header, use_webvpn=False):
     """
 
     # workaround for the AES encryption added in 2020/12/27
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "encrypt.js"), "r") as file:
-        cryptjs = file.read()
-    ctx = execjs.compile(cryptjs)
+    # with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "encrypt.js"), "r") as file:
+    #     cryptjs = file.read()
+    # ctx = execjs.compile(cryptjs)
 
     try:
-        oauth_login_url = get_wrapped_url("https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas/xmu", use_webvpn)
+        oauth_login_url = get_wrapped_url(
+            "https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas/xmu", use_webvpn)
         resp = session.get(oauth_login_url, headers=http_header)
 
         soup = BeautifulSoup(resp.text, 'html.parser')
@@ -35,7 +36,7 @@ def login(session, username, password, http_header, use_webvpn=False):
 
         login_data = {
             "username": username,
-            "password": ctx.call("encryptAES", password, salt),
+            "password": encryptAES(password, salt),
             "lt": lt,
             "dllt": dllt,
             "execution": execution,
