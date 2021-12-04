@@ -47,7 +47,7 @@ pub struct ModifyValueType {
 /// 
 /// @param `client: &Client`  已登录过的 reqwest 会话
 /// 
-/// @return  `Result<ReportResult, Box<dyn Error>>`
+/// @return  `Result<ReportResult, anyhow::Error>`
 pub async fn report(client: &Client, modify_fields: &HashMap<String, ModifyValueType>) -> Result<ReportResult, anyhow::Error> {
   let mut _stage = ReportStage::BeforeReport;
 
