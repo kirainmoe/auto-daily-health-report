@@ -73,7 +73,7 @@ pub async fn modify_log(client: &Client) -> Result<ModifyLogResult, anyhow::Erro
 ///
 /// @param `client: &Client`
 ///
-/// @return `Result<bool, Box<dyn Error>>`
+/// @return `Result<bool, anyhow::Error>`
 pub async fn is_today_reported(client: &Client) -> Result<(bool, String), anyhow::Error> {
   let modify_log_result = modify_log(&client).await?;
   let today_date = get_system_date();
@@ -88,8 +88,8 @@ pub async fn is_today_reported(client: &Client) -> Result<(bool, String), anyhow
 ///
 /// @param `client: &Client`
 ///
-/// @return `Result<bool, Box<dyn Error>>
-pub async fn get_continuous_report_day_count(client: &Client) -> Result<i64, Box<dyn Error>> {
+/// @return `Result<i64, anyhow::Error>
+pub async fn get_continuous_report_day_count(client: &Client) -> Result<i64, anyhow::Error> {
   let resp = get(&client, QRCODE_URL).await?;
   let resp_json: Value = from_str(&resp)?;
   let days_count_str = resp_json["data"]["clockDay"]
@@ -105,8 +105,8 @@ pub async fn get_continuous_report_day_count(client: &Client) -> Result<i64, Box
 /// 
 /// @param `client: &Client`
 /// 
-/// @return `Result<ProfileResult, Box<dyn Error>>`
-pub async fn get_profile(client: &Client) -> Result<ProfileResult, Box<dyn Error>> {
+/// @return `Result<ProfileResult, anyhow::Error>`
+pub async fn get_profile(client: &Client) -> Result<ProfileResult, anyhow::Error> {
   let resp = get(&client, PROFILE_URL).await?;
   let resp_json: Value = from_str(&resp)?;
 
