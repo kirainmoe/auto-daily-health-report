@@ -2,8 +2,6 @@ use reqwest::Client;
 
 use serde_json::{from_str, Value};
 
-use std::error::Error;
-
 use crate::print_on_debug_env;
 use super::client::get;
 use super::constant::{
@@ -94,7 +92,7 @@ pub async fn get_continuous_report_day_count(client: &Client) -> Result<i64, any
   let resp_json: Value = from_str(&resp)?;
   let days_count_str = resp_json["data"]["clockDay"]
     .as_str()
-    .ok_or("Cannot destruct clockDay.")?;
+    .ok_or(anyhow!("Cannot destruct clockDay."))?;
 
   let days_count = days_count_str.parse::<i64>()?;
 
@@ -110,8 +108,8 @@ pub async fn get_profile(client: &Client) -> Result<ProfileResult, anyhow::Error
   let resp = get(&client, PROFILE_URL).await?;
   let resp_json: Value = from_str(&resp)?;
 
-  let name = resp_json["data"]["name"].as_str().ok_or("parse name failed")?;
-  let id = resp_json["data"]["userNo"].as_str().ok_or("parse id failed")?;
+  let name = resp_json["data"]["name"].as_str().ok_or(anyhow!("parse name failed"))?;
+  let id = resp_json["data"]["userNo"].as_str().ok_or(anyhow!("parse id failed"))?;
 
   Ok(ProfileResult {
     name: name.to_string(),
