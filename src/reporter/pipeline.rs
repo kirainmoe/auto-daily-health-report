@@ -101,10 +101,10 @@ pub async fn pipeline(
           _stage.update(PipelineStage::ReportRequestedSuccess);
           _post_data = report_result.post_data;
         } else {
-          print_on_debug_env!(
-            "[Debug] health report request failed, err: {}",
-            report_result.error_message.unwrap()
-          );
+          match report_result.error_message {
+            Some(message) => print_on_debug_env!("[Debug] health report request failed, err: {}", message),
+            None => print_on_debug_env!("[Debug] health report reqeust failed, error is unknown due to network or internal server problem."),
+          };
           _stage.update(PipelineStage::ReportRequestedFailed);
         }
 
