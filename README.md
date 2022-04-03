@@ -51,6 +51,12 @@ xmu-health-report-rust-sdk = "0.1.7"
 
 另请参考 [docs.rs](https://docs.rs/xmu-health-report-rust-sdk/latest/xmu_health_report_rust_sdk/) 中 crate 的接口定义。
 
+# Why Rust?
+
+虽然用 Rust 来写这种东西很折磨，对新手也很不友好。使用 Rust 重写这个项目的耗时，足以让我用 C++ 重新写两遍。
+
+但根据过去半年的数据表明，Rust 版本的鲁棒性相比 Python 版本提升了 N 个档次，只要不是逻辑改动的问题，Rust 版本都能正常处理 —— 至少它在我的服务器上达到了 100% SLA.
+
 # License
 
 MIT 
