@@ -1,7 +1,5 @@
 mod reporter;
 
-pub use reporter::login;
-
 pub use reporter::client::create_client;
 
 pub use reporter::encrypt::encrypt_aes_cbc;

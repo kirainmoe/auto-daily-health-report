@@ -38,6 +38,7 @@ pub struct PipelineResult {
   pub post_data: Option<Value>,
 }
 
+/// 执行打卡流水线，自动打卡 / 检查 / 重试，并返回最终状态
 pub async fn pipeline(
   username: &str,
   password: &str,

@@ -31,6 +31,7 @@ pub fn gas<'a>(data: &'a str, key: &'a str, iv: &'a str) -> String {
   result
 }
 
+/// 统一身份认证 AES-CBC 加密函数
 pub fn encrypt_aes_cbc<'a>(data: &'a str, p1: &'a str) -> String {
   if p1.len() == 0 {
     return data.to_owned();
