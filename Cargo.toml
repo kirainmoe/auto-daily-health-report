@@ -15,7 +15,7 @@ tokio = { version = "1", features = ["full"] }
 aes = "0.7.5"
 block-modes = "0.8.1"
 rand = "0.8.4"
-regex = "1.5.4"
+regex = "1.5.5"
 base64 = "0.13.0"
 serde = "1.0.130"
 serde_json = "1.0.68"
